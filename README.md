@@ -6,4 +6,4 @@ This library provides a variety of tools related to Mathematics, especially when
 
 It has also some functions that help in signal processing such as conv and fft. 
 
-Note that this project is still in progress, so every function could potentially have some bugs.
+Note that this project is still in progress, so inevitably the project might have some bugs here and there.
