@@ -294,7 +294,7 @@ public class LinearAlgebra {
 		if(endy < starty)
 			return null;
 		
-		double[][] out = new double[endy-starty][endx-startx];
+		double[][] out = new double[endy-starty+1][endx-startx+1];
 		for(int i = starty; i <= endy; i ++)
 			for(int j = startx; j <= endx; j ++)
 				out[i-starty][j-startx] = A[i][j];
@@ -314,7 +314,7 @@ public class LinearAlgebra {
 	
 	public static void swapRowsInPlace(double[][] A, int r1, int r2) {			
 		double current;
-		for(int i = 0; i <= A.length; i ++)
+		for(int i = 0; i < A.length; i ++)
 		{	
 			current = A[i][r1];
 			A[i][r1] = A[i][r2];
@@ -322,6 +322,87 @@ public class LinearAlgebra {
 		}			
 	}
 	
+	public static void swapColsInPlace(double[][] A, int r1, int r2) {			
+		double current;
+		for(int i = 0; i < A[0].length; i ++)
+		{	
+			current = A[r1][i];
+			A[r1][i] = A[r2][i];
+			A[r2][i] = current;
+		}			
+	}
+	
+	public static double[][] cat(double[][] A, double[][] B, final String mode) {
+		if(mode.equals("columns")) {
+			if(A.length != B.length) {
+				System.out.println("Concatenation not possible due to mismatch in dimensions (" +A.length+ "x" + A[0].length+", "+B.length+"x"+B[0].length+").");
+				return null;
+			}
+			double[][] out = new double[A.length][A[0].length + B[0].length];
+			for(int i = 0; i < A.length; i ++) {
+				for(int j = 0; j < A[i].length; j ++) {
+					out[i][j] = A[i][j];
+				}
+				for(int j = 0; j < B[i].length; j ++) {
+					out[i][A[i].length + j] = A[i][j];
+				}
+			}
+			return out;	
+		} else if(mode.equals("rows")) {
+			if(A[0].length != B[0].length) {
+
+				System.out.println("Concatenation not possible due to mismatch in dimensions (" +A.length+ "x" + A[0].length+", "+B.length+"x"+B[0].length+").");
+				return null;
+			}
+			double[][] out = new double[A.length + B.length][A[0].length];
+			for(int i = 0; i < A.length; i ++) {
+				for(int j = 0; j < A[i].length; j ++) {
+					out[i][j] = A[i][j];
+				}
+			}
+			for(int i = 0; i < B.length; i ++) {
+				for(int j = 0; j < B[i].length; j ++) {
+					out[i][j] = B[i+A.length][j];
+				}
+			}
+			
+			return out;
+		}
+		System.out.println("Error in mode.");
+		return null;
+	}
+	
+	/**
+	 * Convert vector to matrix. You can copy it either to a row or to a column.
+	 * 
+	 * @param vector vector to convert to matrix
+	 * @param mode preferred mode. It can be "row" or "column"
+	 * */
+	public static double[][] toMatrix(double[] vector, final String mode) {
+		if(mode.equals("column")) {
+			double[][] out = new double[vector.length][1];
+			for (int i = 0; i < vector.length; i ++) {
+				out[i][0] = vector[i];
+			} 
+			return out;
+		} else if(mode.equals("row")) {
+			double[][] out = new double[1][vector.length];
+			for (int i = 0; i < vector.length; i ++) {
+				out[0][i] = vector[i];
+			} 
+			return out;
+		}
+		System.out.println("Error in mode.");
+		return null;
+	}
+	
+	/**
+	 * In place implementation of Gaussian Elimination algorithm. The pseudo code of 
+	 * the algorithm can be found here 
+	 * {@link https://en.wikipedia.org/wiki/Gaussian_elimination#Pseudocode} 
+	 * 
+	 * @param A matrix to perform the algorithm on
+	 *  */
 	public static void gaussianElimination(double[][] A) {
 		int h = 0, k = 0, m = A.length-1, n = A[0].length-1;
 		
@@ -341,6 +422,12 @@ public class LinearAlgebra {
 				h ++;
 				k ++;
 			}
-		}		
+		}				
+	}
+	
+	public static double[] linsolve(double[][] A, double[] b) {
+		double[][] aug = cat(A, toMatrix(b, "column"), "columns"); 
+		gaussianElimination(aug);
+		return getRow(aug, 0);
 	}
 }

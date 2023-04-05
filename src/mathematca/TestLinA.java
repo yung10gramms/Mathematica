@@ -26,6 +26,16 @@ public class TestLinA {
 		
 		double[][] matmat = LinearAlgebra.matmul(a, b);
 		LinearAlgebra.printMat(matmat);
+		System.out.println("\n\n");
+		LinearAlgebra.gaussianElimination(matmat);
+		LinearAlgebra.printMat(matmat);
+		
+		System.out.println("\n\n");
+		double[][] matrix = {{1, 2, 3, 4}, {1, 2, 3, 4}, {1, 2, 3, 4}, {1, 2, 3, 4}};
+		double[] vector = {1, 2, 3, 4};
+		double[] solution = LinearAlgebra.linsolve(matrix, vector);
+		LinearAlgebra.printMat(LinearAlgebra.toMatrix(solution, "row"));
+		
 	}
 
 }
