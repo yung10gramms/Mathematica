@@ -430,4 +430,116 @@ public class LinearAlgebra {
 		gaussianElimination(aug);
 		return getRow(aug, 0);
 	}
+	
+	/**
+	 * function that calls the LU decomposition function of the class
+	 * LUDecomposition made in this project. As I cite there as well, the code for the 
+	 * implementation of the LU algorithm can be found (in C, C# and MATLAB) in this wikipedia
+	 * page:
+	 * {@link https://en.wikipedia.org/wiki/LU_decomposition#Algorithms}
+	 * 
+	 * <p> 
+	 * Note that you cannot instantiate, or call directly the functions of LUDecomposition
+	 * class outside of this package, since I thought that the best design for this 
+	 * project would be to have one class responsible for all matrix operations
+	 * 
+	 * @param A matrix to decompose
+	 * @return L U matrices (in one structure)
+	 * @throws NullPointerException if demensions do not match
+	 * */
+	public static double[][] LUDecompose(double[][] A) {
+		int N = A.length;
+		double[] P = range(0, N+1, 1);
+		double[][] Aclone = A.clone();
+		LUDecomposition lud = new LUDecomposition(Aclone, P);
+		lud.LUPDecompose(0.01*N);
+		return Aclone;
+	}
+	
+	/**
+	 * function that calls the LU-linear-equation-solver function of the class
+	 * LUDecomposition made in this project. As I cite there as well, the code for the 
+	 * implementation of the LU algorithm can be found (in C, C# and MATLAB) in this wikipedia
+	 * page:
+	 * {@link https://en.wikipedia.org/wiki/LU_decomposition#Algorithms}
+	 * 
+	 * <p>
+	 * The system to solve looks like this: Ax = b, where A is a square matrix of dimension N, 
+	 * b is a vector of dimension N as well, and x is the vector to determine 
+	 * 
+	 * <p> 
+	 * Note that you cannot instantiate, or call directly the functions of LUDecomposition
+	 * class outside of this package, since I thought that the best design for this 
+	 * project would be to have one class responsible for all matrix operations
+	 * 
+	 * 
+	 * @param A square A matrix 
+	 * @param b right hand side vector
+	 * @return x the solution 
+	 * @throws NullPointerException if demensions do not match
+	 * 
+	 * */
+	public static double[] LULinsolve(double[][] A, double[] b) {
+		int N = A.length;
+		
+		if(b == null) 
+		{
+			System.out.println("\nVector b cannot be null\n");
+			throw new NullPointerException();
+		}
+		
+		if(b.length != N)
+		{
+			System.out.println("\nVector b must have the same dimensions as A\n");
+			throw new NullPointerException();
+		}
+		
+		double[] P = range(0, N+1, 1);
+		double[][] Aclone = A.clone();
+		
+		LUDecomposition lud = new LUDecomposition(Aclone, P);
+		lud.LUPDecompose(0.01*N);
+		
+		double[] x = new double[N];
+		lud.LUPSolve(b, x);
+		
+		return x;
+	}
+	
+	/**
+	 * function that calls the LU-invert function of the class
+	 * LUDecomposition made in this project. As I cite there as well, the code for the 
+	 * implementation of the LU algorithm can be found (in C, C# and MATLAB) in this wikipedia
+	 * page:
+	 * {@link https://en.wikipedia.org/wiki/LU_decomposition#Algorithms}
+	 * 
+	 * <p>
+	 * The function finds the matrix IA, where IA * A = I, where A is the matrix inserted 
+	 * in the input of the function and I is the identity matrix of demension N
+	 * 
+	 * <p> 
+	 * Note that you cannot instantiate, or call directly the functions of LUDecomposition
+	 * class outside of this package, since I thought that the best design for this 
+	 * project would be to have one class responsible for all matrix operations
+	 * 
+	 * 
+	 * @param A square A matrix 
+	 * @return IA the inverse of the matrix
+	 * @throws NullPointerException if demensions do not match
+	 * 
+	 * */
+	public static double[][] LUPInvert(double[][] A) {
+		int N = A.length;
+		
+		double[] P = range(0, N+1, 1);
+		double[][] Aclone = A.clone();
+		
+		LUDecomposition lud = new LUDecomposition(Aclone, P);
+		lud.LUPDecompose(0.01*N);
+		
+		double[][] IA = new double[N][N];
+		
+		lud.LUPInvert(IA);
+		return IA;
+	}
 }
